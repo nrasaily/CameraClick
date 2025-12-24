@@ -10,8 +10,12 @@ import CoreImage
 import UIKit
 import CoreImage.CIFilterBuiltins
 import Photos
+import Combine
 
 struct ContentView: View {
+    @StateObject private var cameraModel = CameraClickModel()
+    @Environment(\.managedObjectContext) private var ctx
+    
     @State private var image: UIImage? = nil
     @State private var intensity: Double = 0.7
     
@@ -64,8 +68,14 @@ struct ContentView: View {
                 }
                 HStack {
                     Button("Save"){
-                        saveImage()
-                    }
+                        guard let img = image else { return }
+                        cameraModel.saveEditedImage(
+                            image: img,
+                            filterName: "Sepia",
+                            intensity: intensity,
+                            context: ctx
+                        )
+}
                     .buttonStyle(.borderedProminent)
                     .disabled(image == nil)
                 }
